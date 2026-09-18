@@ -42,7 +42,7 @@ cli.bat build-npm --project D:\project\miniprogram
 ```
 ✔ IDE server has started, listening on http://127.0.0.1:17464
 {"login":true}
-✔ Using AppID: wx0000000000000000
+✔ Using AppID: wx0123456789abcdef
  TOTAL  70.9 KB
 ✔ upload
 ```
