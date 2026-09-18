@@ -1,0 +1,38 @@
+# systemd unit for a Spring Boot backend behind nginx.
+# Install to: /etc/systemd/system/movie-system.service
+#   sudo systemctl daemon-reload && sudo systemctl enable --now movie-system
+#
+# Secrets live in the EnvironmentFile (chmod 600, never committed).
+
+[Unit]
+Description=movie-system backend (Spring Boot, mini-program API)
+After=network-online.target mysql.service redis-server.service
+Wants=network-online.target
+Requires=mysql.service redis-server.service
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/opt/movie-system/run
+
+# WX_APPID / WX_SECRET / WX_ADMIN_OPEN_IDS and the DB credentials live here.
+# chmod 600, owned by the service user, never committed.
+EnvironmentFile=/opt/movie-system/movie.env
+Environment=SPRING_PROFILES_ACTIVE=dev
+Environment=JAVA_TOOL_OPTIONS=-Xms256m -Xmx1024m -XX:MaxDirectMemorySize=256m -Dfile.encoding=UTF-8
+
+ExecStart=/usr/bin/java -jar /opt/movie-system/run/app.jar
+SuccessExitStatus=143
+Restart=always
+RestartSec=5
+TimeoutStopSec=30
+
+StandardOutput=append:/opt/movie-system/run/app.log
+StandardError=append:/opt/movie-system/run/app.log
+
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
